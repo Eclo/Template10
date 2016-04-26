@@ -61,24 +61,24 @@
                              Command="{Binding NavCommand, ElementName=ThisPage}"
                              CommandParameter="{Binding}" GroupName="Nav"
                              Holding="NavButton_Holding"
-                             IsChecked="{x:Bind IsChecked, Mode=TwoWay}"
-                             IsEnabled="{x:Bind IsEnabled, Mode=TwoWay}"
+                             IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                             IsEnabled="{Binding IsEnabled, Mode=TwoWay}"
                              Loaded="NavButton_Loaded"
                              RightTapped="NavButton_RightTapped" Tag="{x:Bind Content}"
                              Tapped="NavButton_Tapped"
-                             Visibility="{x:Bind Visibility, Mode=TwoWay}">
+                             Visibility="{Binding Visibility, Mode=TwoWay}">
                     <RadioButton.Template>
                         <ControlTemplate TargetType="RadioButton">
                             <ToggleButton Height="48" MinWidth="48"
-                                          MaxWidth="{Binding MaxWidth, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                          HorizontalAlignment="{Binding HorizontalAlignment, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                          Command="{Binding Command, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                          CommandParameter="{Binding CommandParameter, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                          Content="{Binding Tag, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                          MaxWidth="{TemplateBinding MaxWidth}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                          Command="{TemplateBinding Command}"
+                                          CommandParameter="{TemplateBinding CommandParameter}"
+                                          Content="{TemplateBinding Tag}"
                                           IsChecked="{Binding IsChecked, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                           Checked="NavButtonChecked" Unchecked="NavButtonUnchecked"
                                           UseSystemFocusVisuals="True"
-                                          Visibility="{Binding Visibility, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                                          Visibility="{TemplateBinding Visibility}">
                                 <ToggleButton.Template>
                                     <ControlTemplate TargetType="ToggleButton">
                                         <Grid x:Name="RootGrid" Width="{Binding PaneWidth, ElementName=ThisPage}" Background="Transparent">
@@ -241,25 +241,29 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <ContentControl Height="48" Margin="48,0,0,0"
+        <ContentControl x:Name="Header" Height="48" Margin="48,0,0,0"
                         VerticalAlignment="Top" HorizontalContentAlignment="Stretch"
                         Content="{Binding HeaderContent, ElementName=ThisPage}">
             <Interactivity:Interaction.Behaviors>
                 <Core:DataTriggerBehavior Binding="{Binding Visibility, ElementName=HamburgerButton}" Value="Visible">
-                    <Core:ChangePropertyAction PropertyName="Margin" TargetObject="{Binding ElementName=PaneContent}">
+                    <Core:ChangePropertyAction PropertyName="Margin" TargetObject="{Binding ElementName=Header}">
                         <Core:ChangePropertyAction.Value>
                             <Thickness>48,0,0,0</Thickness>
                         </Core:ChangePropertyAction.Value>
                     </Core:ChangePropertyAction>
                 </Core:DataTriggerBehavior>
                 <Core:DataTriggerBehavior Binding="{Binding Visibility, ElementName=HamburgerButton, Mode=OneWay}" Value="Collapsed">
-                    <Core:ChangePropertyAction PropertyName="Margin" TargetObject="{Binding ElementName=PaneContent}" />
+                    <Core:ChangePropertyAction PropertyName="Margin" TargetObject="{Binding ElementName=Header}">
+                        <Core:ChangePropertyAction.Value>
+                            <Thickness>0,0,0,0</Thickness>
+                        </Core:ChangePropertyAction.Value>
+                    </Core:ChangePropertyAction>
                 </Core:DataTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
         </ContentControl>
 
         <SplitView x:Name="ShellSplitView" Grid.Column="0"
-                   DisplayMode="Inline"
+                   DisplayMode="Inline" IsPaneOpen="False"
                    OpenPaneLength="{x:Bind PaneWidth, Mode=OneWay}"
                    PaneBackground="Transparent">
 
@@ -267,8 +271,8 @@
 
                 <Grid x:Name="PaneContent" Margin="0,48,0,0"
                       Background="{x:Bind NavAreaBackground, FallbackValue=Blue, Mode=OneWay}"
-                      BorderBrush="{x:Bind SecondarySeparator, FallbackValue=White, Mode=OneWay}"
-                      BorderThickness="0,0,1,0" Tapped="PaneContent_Tapped">
+                      BorderBrush="{x:Bind PaneBorderBrush, FallbackValue=White, Mode=OneWay}"
+                      BorderThickness="{x:Bind PaneBorderThickness, FallbackValue='0,0,1,0'}" Tapped="PaneContent_Tapped">
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
@@ -284,17 +288,32 @@
                             </Core:ChangePropertyAction>
                         </Core:DataTriggerBehavior>
                         <Core:DataTriggerBehavior Binding="{Binding Visibility, ElementName=HamburgerButton, Mode=OneWay}" Value="Collapsed">
-                            <Core:ChangePropertyAction PropertyName="Margin" TargetObject="{Binding ElementName=PaneContent}">
-                                <Core:ChangePropertyAction.Value>
-                                    <Thickness>0,0,0,0</Thickness>
-                                </Core:ChangePropertyAction.Value>
-                            </Core:ChangePropertyAction>
+                            <b:ConditionalAction xmlns:b="using:Template10.Behaviors"
+                                                  LeftValue="{x:Bind HeaderContent}"
+                                                  Operator="IsNull">
+                                <Core:ChangePropertyAction PropertyName="Margin" TargetObject="{Binding ElementName=PaneContent}">
+                                    <Core:ChangePropertyAction.Value>
+                                        <Thickness>0,0,0,0</Thickness>
+                                    </Core:ChangePropertyAction.Value>
+                                </Core:ChangePropertyAction>
+                            </b:ConditionalAction>
+                        </Core:DataTriggerBehavior>
+                        <Core:DataTriggerBehavior Binding="{Binding Visibility, ElementName=HamburgerButton, Mode=OneWay}" Value="Collapsed">
+                            <b:ConditionalAction xmlns:b="using:Template10.Behaviors"
+                                                  LeftValue="{x:Bind HeaderContent}"
+                                                  Operator="IsNotNull">
+                                <Core:ChangePropertyAction PropertyName="Margin" TargetObject="{Binding ElementName=PaneContent}">
+                                    <Core:ChangePropertyAction.Value>
+                                        <Thickness>0,48,0,0</Thickness>
+                                    </Core:ChangePropertyAction.Value>
+                                </Core:ChangePropertyAction>
+                            </b:ConditionalAction>
                         </Core:DataTriggerBehavior>
                     </Interactivity:Interaction.Behaviors>
 
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
 
-                        <ItemsControl ItemTemplate="{StaticResource NavButtonTemplate}" ItemsSource="{Binding PrimaryButtons, ElementName=ThisPage}">
+                        <ItemsControl ItemTemplate="{StaticResource NavButtonTemplate}" ItemsSource="{Binding PrimaryButtons, ElementName=ThisPage}" x:Name="PrimaryButtonContainer">
 
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -326,7 +345,7 @@
 
                     </ScrollViewer>
 
-                    <ItemsControl Grid.Row="1" ItemTemplate="{StaticResource NavButtonTemplate}" ItemsSource="{Binding SecondaryButtons, ElementName=ThisPage}">
+                    <ItemsControl Grid.Row="1" ItemTemplate="{StaticResource NavButtonTemplate}" ItemsSource="{Binding SecondaryButtons, ElementName=ThisPage}" x:Name="SecondaryButtonContainer">
 
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

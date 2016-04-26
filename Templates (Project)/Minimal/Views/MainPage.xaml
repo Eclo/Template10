@@ -11,7 +11,7 @@
       xmlns:vm="using:Sample.ViewModels" mc:Ignorable="d">
 
     <Page.DataContext>
-        <vm:MainPageViewModel />
+        <vm:MainPageViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -82,7 +82,7 @@
                             <Core:CallMethodAction MethodName="GotoDetailsPage" TargetObject="{Binding}" />
                         </Behaviors:TextBoxEnterKeyBehavior>
                         <Core:EventTriggerBehavior>
-                            <Behaviors:FocusAction/>
+                            <Behaviors:FocusAction />
                         </Core:EventTriggerBehavior>
                     </Interactivity:Interaction.Behaviors>
                 </TextBox>

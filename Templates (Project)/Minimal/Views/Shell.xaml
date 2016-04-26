@@ -7,14 +7,16 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:Sample.Views"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
       xmlns:views="using:Sample.Views" mc:Ignorable="d">
 
-    <Controls:ModalDialog IsModal="{x:Bind IsBusy, Mode=OneWay}">
+    <Controls:ModalDialog CanBackButtonDismiss="False" DisableBackButtonWhenModal="True" IsModal="{x:Bind IsBusy, Mode=OneWay}">
         <Controls:ModalDialog.Content>
-            <Controls:HamburgerMenu x:Name="MyHamburgerMenu" IsFullScreen="False">
+            <Controls:HamburgerMenu x:Name="MyHamburgerMenu">
 
                 <Controls:HamburgerMenu.PrimaryButtons>
-                    <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:MainPage">
+                    <!-- mainpage button -->
+                    <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:MainPage" >
                         <StackPanel Orientation="Horizontal">
                             <SymbolIcon Width="48" Height="48" Symbol="Home" />
                             <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Home" />
@@ -23,7 +25,8 @@
                 </Controls:HamburgerMenu.PrimaryButtons>
 
                 <Controls:HamburgerMenu.SecondaryButtons>
-                    <Controls:HamburgerButtonInfo PageType="views:SettingsPage">
+                    <!-- settingspage button -->
+                    <Controls:HamburgerButtonInfo x:Name="SettingsButton" PageType="views:SettingsPage">
                         <StackPanel Orientation="Horizontal">
                             <SymbolIcon Width="48" Height="48" Symbol="Setting" />
                             <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Settings" />
@@ -32,10 +35,10 @@
                 </Controls:HamburgerMenu.SecondaryButtons>
 
             </Controls:HamburgerMenu>
-
         </Controls:ModalDialog.Content>
+        
         <Controls:ModalDialog.ModalContent>
-
+            <!-- busy visual -->
             <Viewbox Height="32">
                 <StackPanel Orientation="Horizontal">
                     <ProgressRing Width="16" Height="16"
@@ -44,8 +47,8 @@
                     <TextBlock VerticalAlignment="Center" Foreground="White" Text="{x:Bind BusyText, Mode=OneWay}" />
                 </StackPanel>
             </Viewbox>
-
         </Controls:ModalDialog.ModalContent>
+        
     </Controls:ModalDialog>
 
 </Page>
